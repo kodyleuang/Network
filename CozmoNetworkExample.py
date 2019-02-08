@@ -44,6 +44,8 @@ def cozmo_program(robot: cozmo.robot.Robot):
     
     robot.say_text("ready").wait_for_completed()    
     
+    #SET COZMO's NAME
+    myName = 'CozmoName'
     while cont:
         bytedata = s.recv(4048)
         #data = str(bytedata)
@@ -58,22 +60,24 @@ def cozmo_program(robot: cozmo.robot.Robot):
             #---------------------------------------------------------
             print(data)
             instructions = data.split(';')
-            if len(instructions) == 5:
-                #we know that this is a message involving movement
-                instructions[3] = int(instructions[3])
-                instructions[4] = int(instructions[4])
-                #next, we will want to move forward or backward, if the x distance is not 0
-                #first, just move if 'F' and turn 180 degrees for 'B'
-                #then, we will want to turn left or right, if the y distance is not 0
-                print(instructions)
-                robot.say_text(instructions[0]).wait_for_completed()
-            elif len(instructions) == 2:
-                #this is where we move the tractor or the head
-                #if the first value is greater than 0, move the head
-                #if the second value is greater than 0, move the tractor arm
-                instructions[0] = int(instructions[0])
-                instructions[1] = int(instructions[1])
-                print(instructions)
-            s.sendall(b"Done")
+            #check the name:
+            if instructions[0] == myName:
+                if len(instructions) == 5:
+                    #we know that this is a message involving movement
+                    instructions[3] = int(instructions[3])
+                    instructions[4] = int(instructions[4])
+                    #next, we will want to move forward or backward, if the x distance is not 0
+                    #first, just move if 'F' and turn 180 degrees for 'B'
+                    #then, we will want to turn left or right, if the y distance is not 0
+                    print(instructions)
+                    robot.say_text(instructions[0]).wait_for_completed()
+                elif len(instructions) == 3:
+                    #this is where we move the tractor or the head
+                    #if the first value is greater than 0, move the head
+                    #if the second value is greater than 0, move the tractor arm
+                    instructions[1] = int(instructions[1])
+                    instructions[2] = int(instructions[2])
+                    print(instructions)
+                s.sendall(b"Done")
 
 cozmo.run_program(cozmo_program)
