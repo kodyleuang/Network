@@ -68,7 +68,23 @@ def cozmo_program(robot: cozmo.robot.Robot):
                     instructions[4] = int(instructions[4])
                     #next, we will want to move forward or backward, if the x distance is not 0
                     #first, just move if 'F' and turn 180 degrees for 'B'
+                    if instructions[3] != 0:
+                        distX = instructions[3]
+                        if instructions[1] == 'F':
+                            robot.drive_straight(distance_mm(distX), speed_mmps(150)).wait_for_completed()
+                        elif instructions[1] == 'B':
+                            robot.turn_in_place(degrees(180)).wait_for_completed()
+                            robot.drive_straight(distance_mm(distX), speed_mmps(150)).wait_for_completed()
                     #then, we will want to turn left or right, if the y distance is not 0
+                    elif instructions[4] != 0:
+                        distY = instructions[4]
+                        if instructions[2] == 'L':
+                            robot.turn_in_place(degrees(90)).wait_for_completed()
+                            robot.drive_straight(distance_mm(distY), speed_mmps(150)).wait_for_completed()
+                        elif instructions[2] == 'R':
+                            robot.turn_in_place(degrees(-90)).wait_for_completed()
+                            robot.drive_straight(distance_mm(distY), speed_mmps(150)).wait_for_completed()
+
                     print(instructions)
                     robot.say_text(instructions[0]).wait_for_completed()
                 elif len(instructions) == 3:
@@ -78,6 +94,13 @@ def cozmo_program(robot: cozmo.robot.Robot):
                     instructions[1] = int(instructions[1])
                     instructions[2] = int(instructions[2])
                     print(instructions)
+                    if instructions[1] != 0:
+                        headMove = instructions[1]
+                        robot.set_head_angle(degrees(headMove)).wait_for_completed()
+                    elif instructions[2] != 0:
+                        liftMove = instructions[2]
+                        robot.move_lift(liftMove)
                 s.sendall(b"Done")
+
 
 cozmo.run_program(cozmo_program)
