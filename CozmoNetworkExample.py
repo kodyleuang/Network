@@ -76,7 +76,7 @@ def cozmo_program(robot: cozmo.robot.Robot):
                             robot.turn_in_place(degrees(180)).wait_for_completed()
                             robot.drive_straight(distance_mm(distX), speed_mmps(150)).wait_for_completed()
                     #then, we will want to turn left or right, if the y distance is not 0
-                    elif instructions[4] != 0:
+                    if instructions[4] != 0:
                         distY = instructions[4]
                         if instructions[2] == 'L':
                             robot.turn_in_place(degrees(90)).wait_for_completed()
@@ -91,15 +91,18 @@ def cozmo_program(robot: cozmo.robot.Robot):
                     #this is where we move the tractor or the head
                     #if the first value is greater than 0, move the head
                     #if the second value is greater than 0, move the tractor arm
-                    instructions[1] = int(instructions[1])
-                    instructions[2] = int(instructions[2])
+                    instructions[1] = float(instructions[1])
+                    instructions[2] = float(instructions[2])
                     print(instructions)
-                    if instructions[1] != 0:
-                        headMove = instructions[1]
-                        robot.set_head_angle(degrees(headMove)).wait_for_completed()
-                    elif instructions[2] != 0:
-                        liftMove = instructions[2]
-                        robot.move_lift(liftMove)
+                    headAngle = instructions[1]
+                    headAngle = max(-25, min(headAngle,44.5))
+
+                    robot.set_head_angle(degrees(headAngle)).wait_for_completed()
+
+                    liftArm = instructions[2]
+                    liftArm = max(0, min(liftArm, 1.0))
+
+                    robot.set_lift_height(liftArm, in_parallel = True).wait_for_completed()
                 s.sendall(b"Done")
 
 
